@@ -1,0 +1,198 @@
+   **----------------------------------**
+   ** Comparison With My Own Simulator **
+   **----------------------------------**   
+                             
+   **----------------------------------------------------------------------------**
+   ** I/O Control Section                                                        **
+   **----------------------------------------------------------------------------**
+
+   *TITLE1
+   'Comparison Project'
+
+   *INUNIT *FIELD
+
+   *WPRN   *WELL   10
+   *WPRN   *GRID   *TIME
+   *WPRN   *ITER   *BRIEF
+   **WPRN   *ITER   *MATRIX
+
+   *OUTPRN *WELL   *BRIEF
+   *OUTPRN *RES    *NONE
+   *OUTPRN *TABLES *NONE
+   *OUTPRN *GRID   *SO *PRES *BPP *IMEXMAP
+
+   *WSRF   *GRID   *TIME
+   *WSRF   *WELL   1 
+   *OUTSRF *GRID   *SO *PRES *BPP
+
+
+   **---------------------------------**
+   **  Reservoir Description Section  **                                           
+   **---------------------------------**
+
+   *GRID *CART 7   7    3    
+   *DI *CON 30.0
+   *DJ *CON 30.0             
+   *DK *CON 10.0                     
+   *KDIR *DOWN
+   *DEPTH 1 1 1 1                   ** Depth to center of first block, in bottom layer.
+
+   *POR *KVAR
+        0.30              ** Porosity is constant throughout the reservoir.
+                
+   *CPOR   45E-6              ** Rock compressibility and
+   *PRPOR 2500               ** reference pressure.   
+
+   *PERMI *CON                ** Each of the I, J, and K permeabilities are
+      10.0   ** constant within each layer of the reservoir,
+   *PERMJ *CON                ** but vary from layer to layer. Hense the use
+      10.0        ** of *KVAR to input them layer by layer. Note
+   *PERMK *CON                ** that the first K layer is at bottom of the
+      10.0        ** reservoir.
+
+
+   *MODEL *OILWATER            
+   **----------------------------------------------**
+   **    Component Property Section                **
+   **----------------------------------------------**
+   *PVT
+   **  p      rs     bo     eg    viso    visg
+      2500    0.0    1.0    0.0      3    0.0
+        
+   *DENSITY *OIL    45
+   *DENSITY *GAS    0.0
+   *DENSITY *WATER  60
+   *CO    0.0
+   *CVO   0.0
+   *BWI   1
+   *CW    0.0
+   *REFPW 0.0
+   *VWI   1
+   *CVW   0.0   
+   
+
+   *ROCKFLUID
+   ********************************************************************************
+   ** Rock-Fluid Property Section                                                **
+   ********************************************************************************
+   *RPT
+   *SWT
+   ** sw                   krw                   krow   
+	0.25	0	 		1		70
+	0.3		3.00E-04	0.813	45
+	0.35	0.0024		0.651	30
+	0.4		0.008		0.512	16
+	0.45	0.019		0.394	12
+	0.5		0.037		0.269	7
+	0.6		0.1017		0.152	4
+	0.7		0.216		0.064	2
+	1		1			0		1
+ 
+
+   
+   *INITIAL
+   ********************************************************************************
+   ** Initial Conditions Section                                                 **
+   ********************************************************************************
+   *USER_INPUT 
+   *SO *CON 0.75
+   *PRES *CON  3000
+   *PB *CON    14.7               ** buble point pressure
+   ***REFDEPTH   8400.           ** Give a reference depth  and
+   ***REFPRES    4800.           ** associated pressure.
+   ***DWOC       9500.           ** Depth to water-oil contact           
+
+
+   *NUMERICAL
+   ********************************************************************************
+   ** Numerical Control Section                                                  **
+   ********************************************************************************
+   *DTMAX         1.0         ** Maximum time step size
+   **MAXSTEPS     400        ** Maximum number of time steps
+   *NORM *PRESS  1000.0     ** Normal maximum changes per time step
+   *NORM *SATUR  0.20
+   *AIM  *OFF     
+
+
+   *RUN
+   ********************************************************************************
+   ** Well and Recurrent Data Section                                            **
+   ********************************************************************************
+   *DATE 2000 01 01
+   *DTWELL 1.0
+   
+**********************************************************************************                     
+   *WELL 1  'Injector'   
+
+   *INJECTOR  *MOBWEIGHT  1             ** Define the type of well 1.
+   *INCOMP    *WATER                    
+   *OPERATE   *MAX  *STW  200       ** Operating on a rate specification.       
+   **OPERATE   *MAX  *BHP  20000.0       
+   **MONITOR   *BACKFLOW   *STOP        ** If backflow occurs, stop the simulation.      
+
+   ** rad geofac wfrac skin
+   *GEOMETRY *K 0.1 1.0 1.0 0.0
+   *PERF *GEO 1
+   ** if     jf     kf     ff                         
+      4      4      1      1
+
+************************************************************************
+   *WELL 2  'Producer1'
+
+   *PRODUCER  2                        ** Define the type of well 2.
+   *OPERATE *MIN  *BHP  2500.0         ** If the BHP falls below 1000 psi, switch
+                                       ** to a minimum pressure constraint.
+   **MONITOR *BACKFLOW	*STOP  ** Stop if backflow occurs.
+
+   ** rad geofac wfrac skin
+   *GEOMETRY *K 0.1 1.0 1.0 0.0
+   *PERF *GEO 2
+   ** if     jf     kf     ff                         
+      1      1      1      1
+   
+*************************************************************************
+   *WELL 3  'Producer2'
+
+   *PRODUCER  3                        ** Define the type of well 2.
+   *OPERATE *MIN  *BHP  2500.0         ** If the BHP falls below 1000 psi, switch
+                                       ** to a minimum pressure constraint.
+   **MONITOR *BACKFLOW           *STOP  ** Stop if backflow occurs.
+
+   ** rad geofac wfrac skin
+   *GEOMETRY *K 0.1 1.0 1.0 0.0
+   *PERF *GEO 3
+   ** if     jf     kf     ff                         
+      7      1      1      1
+ 
+**************************************************************************
+   *WELL 4  'Producer3'
+
+   *PRODUCER  4                       ** Define the type of well 2.
+   *OPERATE *MIN  *BHP  2500.0         ** If the BHP falls below 1000 psi, switch
+                                       ** to a minimum pressure constraint.
+   **MONITOR *BACKFLOW           *STOP  ** Stop if backflow occurs.
+
+   ** rad geofac wfrac skin
+   *GEOMETRY *K 0.1 1.0 1.0 0.0
+   *PERF *GEO 4
+   ** if     jf     kf     ff                         
+      1      7      1      1
+	  
+**************************************************************************
+   *WELL 5  'Producer4'
+
+   *PRODUCER  5                        ** Define the type of well 2.
+   *OPERATE *MIN  *BHP  2500.0         ** If the BHP falls below 1000 psi, switch
+                                       ** to a minimum pressure constraint.
+   **MONITOR *WCUT 0.99  *STOP  ** Stop if backflow occurs.
+   
+   ** rad geofac wfrac skin
+   *GEOMETRY *K 0.1 1.0 1.0 0.0
+   *PERF *GEO 5
+   ** if     jf     kf     ff                         
+      7      7      1      1
+
+***************************************************************************
+
+   *TIME 400.0                        ** Time of next well change.
+   *STOP                              ** Stop the simulation.
